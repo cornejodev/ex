@@ -554,3 +554,33 @@ def get_logger(name: str) -> logging.Logger:
     logger.propagate = False
 
     return logger
+
+===
+
+total_seconds = (end_dt - start_dt).total_seconds()
+duration_seconds = round(total_seconds, 2)
+duration_minutes = round(total_seconds / 60, 2)
+
+minutes = int(total_seconds // 60)
+seconds = int(total_seconds % 60)
+duration_human = f"{minutes}m {seconds}s"
+
+
+
+
+total_seconds = (end_dt - start_dt).total_seconds()
+duration_seconds = round(total_seconds, 2)
+duration_minutes = round(total_seconds / 60, 2)
+
+minutes = int(total_seconds // 60)
+seconds = int(total_seconds % 60)
+duration_human = f"{minutes}m {seconds}s"
+
+logger.info("Duration: %s (%s seconds)", duration_human, duration_seconds)
+
+
+
+import math
+
+minutes = math.floor(total_seconds / 60)
+seconds = round(total_seconds % 60, 2)

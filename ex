@@ -599,3 +599,22 @@ log_cli_format = %(asctime)s | %(levelname)-8s | %(name)s | %(message)s
 log_cli_date_format = %d-%m-%Y %H:%M:%S
 log_file = test_results/execution.log
 log_file_level = INFO
+
+====
+
+
+log_cli = true
+log_cli_level = INFO
+log_cli_format = %(asctime)s | %(levelname)-8s | %(name)s | %(message)s
+log_cli_date_format = %d-%m-%Y %H:%M:%S
+log_file = test_results/execution.log
+log_file_level = INFO
+log_file_format = %(asctime)s | %(levelname)-8s | %(name)s | %(message)s
+log_file_date_format = %d-%m-%Y %H:%M:%S
+
+
+
+def get_logger(name: str) -> logging.Logger:
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.INFO)
+    return logger

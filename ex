@@ -568,17 +568,22 @@ duration_human = f"{minutes}m {seconds}s"
 
 
 
-total_seconds = (end_dt - start_dt).total_seconds()
-duration_seconds = round(total_seconds, 2)
-duration_minutes = round(total_seconds / 60, 2)
-
-minutes = int(total_seconds // 60)
-seconds = int(total_seconds % 60)
-duration_human = f"{minutes}m {seconds}s"
-
-logger.info("Duration: %s (%s seconds)", duration_human, duration_seconds)
-
-
+summary_df = pd.DataFrame(
+    [
+        {"metric": "source_excel_file", "value": str(source_excel_path)},
+        {"metric": "source_sheet_name", "value": source_sheet_name},
+        {"metric": "total_test_cases", "value": total_count},
+        {"metric": "passed_test_cases", "value": passed_count},
+        {"metric": "failed_test_cases", "value": failed_count},
+        {"metric": "pass_rate_percent", "value": pass_rate_percent},
+        {"metric": "started_at", "value": start_dt.strftime("%d_%m_%Y %H:%M:%S")},
+        {"metric": "finished_at", "value": end_dt.strftime("%d_%m_%Y %H:%M:%S")},
+        {"metric": "duration_seconds", "value": duration_seconds},
+        {"metric": "duration_minutes", "value": duration_minutes},
+        {"metric": "duration_human", "value": duration_human},
+        {"metric": "failed_test_ids", "value": failed_ids},
+    ]
+)
 
 import math
 

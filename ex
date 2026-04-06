@@ -271,3 +271,63 @@ def get_latest_chatbot_response(page: Page) -> str:
 
     return (chatbot_response.inner_text() or "").strip()
 
+==
+
+def export_diagnostics_excel_to_failure_folder(page: Page, evidence_dir: Path) -> Path:
+    evidence_dir.mkdir(parents=True, exist_ok=True)
+
+    export_button = page.get_by_role("button", name="Export To Excel")
+    export_button.wait_for(state="visible", timeout=60_000)
+    expect(export_button).to_be_enabled(timeout=60_000)
+
+    with page.expect_download() as download_info:
+        export_button.click()
+
+    download = download_info.value
+    save_path = evidence_dir / download.suggested_filename
+    download.save_as(str(save_path))
+
+    return save_path
+
+===
+
+except Exception as exc:
+    print(f"Test ID {tc_id}: FAILED")
+    print(str(exc))
+
+    evidence_dir.mkdir(parents=True, exist_ok=True)
+
+    try:
+        page.screenshot(
+            path=str(evidence_dir / f"tc_{tc_id}_failure.png"),
+            full_page=True,
+        )
+    except Exception:
+        pass
+
+    try:
+        html = page.content()
+        (evidence_dir / f"tc_{tc_id}_dom.html").write_text(html, encoding="utf-8")
+    except Exception:
+        pass
+
+    try:
+        exported_file = export_diagnostics_excel_to_failure_folder(page, evidence_dir)
+        print(f"Saved diagnostics export to: {exported_file}")
+    except Exception as export_error:
+        print(f"Could not export diagnostics for TC {tc_id}: {export_error}")
+
+    failed_rows.append(
+        {
+            "tc_id": tc_id,
+            "input": user_input,
+            "expected_output": expected_output,
+            "actual_output": actual_output,
+            "status": "failed",
+        }
+    )
+
+==
+
+
+

@@ -224,3 +224,50 @@ def get_latest_chatbot_response(page: Page) -> str:
 
     return (chatbot_response.inner_text() or "").strip()
 
+
+===
+
+
+import time
+from playwright.sync_api import Page, TimeoutError as PlaywrightTimeoutError
+
+
+def get_latest_chatbot_response(page: Page) -> str:
+    chatbot_response = page.locator(".cai-streamed-response").last
+    chatbot_response.wait_for(state="visible", timeout=60_000)
+
+    generating = page.get_by_text("Generating response...")
+
+    try:
+        generating.wait_for(state="visible", timeout=10_000)
+    except PlaywrightTimeoutError:
+        pass
+
+    try:
+        generating.wait_for(state="hidden", timeout=60_000)
+    except PlaywrightTimeoutError:
+        pass
+
+    timeout_seconds = 60
+    poll_interval = 1.0
+    stable_checks_needed = 3
+
+    end_time = time.time() + timeout_seconds
+    previous_text = ""
+    stable_checks = 0
+
+    while time.time() < end_time:
+        current_text = (chatbot_response.inner_text() or "").strip()
+
+        if current_text and current_text == previous_text:
+            stable_checks += 1
+            if stable_checks >= stable_checks_needed:
+                return current_text
+        else:
+            stable_checks = 0
+            previous_text = current_text
+
+        time.sleep(poll_interval)
+
+    return (chatbot_response.inner_text() or "").strip()
+

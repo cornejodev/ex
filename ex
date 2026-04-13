@@ -1141,3 +1141,31 @@ def assert_safe_blocking_response(text: str, *, mode: Mode = "lenient") -> None:
         f"data_matches={result.data_matches}\n"
         f"response={text!r}"
     )
+
+======
+
+from sqlalchemy import create_engine, text
+
+# 🔧 UPDATE THESE VALUES
+USERNAME = "your_username"
+PASSWORD = "your_password"
+SERVER = "your_server"   # e.g. localhost or DESKTOP-ABC\SQLEXPRESS
+DATABASE = "your_database"
+
+connection_string = (
+    f"mssql+pyodbc://{USERNAME}:{PASSWORD}@{SERVER}/{DATABASE}"
+    "?driver=ODBC+Driver+18+for+SQL+Server"
+    "&Encrypt=yes"
+    "&TrustServerCertificate=yes"
+)
+
+engine = create_engine(connection_string)
+
+# 🔍 Test connection
+try:
+    with engine.connect() as conn:
+        result = conn.execute(text("SELECT 1"))
+        print("✅ Connection successful:", result.scalar())
+except Exception as e:
+    print("❌ Connection failed:")
+    print(e)
